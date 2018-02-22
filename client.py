@@ -1,8 +1,18 @@
 import socket
 
-s = socket.socket()
-host = ''
-port = 12345
-s.connect((host,port))
-print(s.recv(1024))
-s.close()
+host = '192.168.4.1'
+port = 6677
+i=0
+
+def new_sock(host, port):
+  s = socket.socket()
+  s.connect((host,port))
+  return s
+
+
+while(i<10):
+  s = new_sock(host,port)
+  print(s.recv(512))
+  s.send('{}' .format(i))
+  i = i + 1
+  s.close()
