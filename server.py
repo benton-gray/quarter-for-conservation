@@ -1,8 +1,8 @@
 import socket
 
 s = socket.socket()
-host = '0.0.0.0'
-port = 12345
+host = '192.168.4.1'
+port = 6677
 s.bind((host,port))
 
 s.listen(5)
