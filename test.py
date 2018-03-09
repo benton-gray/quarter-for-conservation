@@ -3,6 +3,8 @@ import RPi.GPIO as ada
 print '{} is the version type.' .format(ada.VERSION)
 
 ada.setmode(ada.BCM)
+ada.setup(24, ada.OUT, pull_up_down=ada.PUD_DOWN)
+'''
 count = 0
 ada.setup(24, ada.IN, pull_up_down=ada.PUD_DOWN)
 ada.setup(23, ada.IN, pull_up_down=ada.PUD_UP)
@@ -16,6 +18,8 @@ ada.add_event_detect(24, ada.RISING, callback=my_callback, bouncetime=200)
 
 print 'waiting for edge'
 ada.wait_for_edge(23, ada.FALLING)
+'''
+
 
 ada.cleanup()
 
