@@ -37,44 +37,41 @@ chain = 2
 displays = 1
 common_cathode = False
 
-
 def init(data_pin=18, clock_pin=23, latch_pin=24, registers=1, no_of_displays=1, common_cathode_type=False):
-    global data, clock, latch, chain, common_cathode, displays
-    data = data_pin
-    clock = clock_pin
-    latch = latch_pin
-    chain = registers
-    common_cathode = common_cathode_type
-    displays = no_of_displays
-    setup()
+  global data, clock, latch, chain, common_cathode, displays
+  data = data_pin
+  clock = clock_pin
+  latch = latch_pin
+  chain = registers
+  common_cathode = common_cathode_type
+  displays = no_of_displays
+  setup()
 
 
 def setup():
-    if common_cathode:
-        for key in available_chars:
-            available_chars[key] = ~available_chars[key]
-    shift.init(data, clock, latch, chain)
+  if common_cathode:
+    for key in available_chars:
+      available_chars[key] = ~available_chars[key]
+  shift.init(data, clock, latch, chain)
 
 
 def with_dot(value):
-    return value & ~(1 << 7)
-
-
+  return value & ~(1 << 7)
 
 def show(values, dots=[]):
-    #values.reverse()
-    length = len(values)
-    if length > displays*chain:
-        raise ValueError("More Characters than available on displays")
-    else:
-        #shift.init(data, clock, latch, chain)
-        for i in range(length):
-            try:
-                char = available_chars[values[i]]
-                if i+1 in dots:
-                    char = with_dot(char)
-                #print(char << 8 | 1 << i)
-                print(char)
-                shift.write(char)
-            except KeyError:
-                raise ValueError("The character cannot be printed on a 7 segment display")
+  #values.reverse()
+  length = len(values)
+  if length > displays*chain:
+    raise ValueError("More Characters than available on displays")
+  else:
+    #shift.init(data, clock, latch, chain)
+    for i in range(length):
+      try:
+        char = available_chars[values[i]]
+        if i+1 in dots:
+          char = with_dot(char)
+        #print(char << 8 | 1 << i)
+        print(char)
+        shift.write(char)
+      except KeyError:
+        raise ValueError("The character cannot be printed on a 7 segment display")
