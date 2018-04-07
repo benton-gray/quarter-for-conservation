@@ -121,6 +121,9 @@ def main():
       flag = False
 
 if __name__ == "__main__":
-  main()
+  try:
+    main()
+  except:
+    GPIO.cleanup()
 else:
   exit
