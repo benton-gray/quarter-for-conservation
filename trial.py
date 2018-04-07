@@ -122,7 +122,7 @@ def main():
     if flag:
       LED_NUMBER()
       flag = False
-    x = server.serv()
+    server.serv()
 
 if __name__ == "__main__":
   try:
