@@ -61,10 +61,22 @@ def with_dot(value):
 def show(values, dots=[]):
   #values.reverse()
   length = len(values)
+  numberOfZeroes = chain - length
+  print("number of zeros")
+  print(numberOfZeroes)
   if length > displays*chain:
     raise ValueError("More Characters than available on displays")
   else:
-    #shift.init(data, clock, latch, chain)
+    #need to first send in zeroes to control the current going through the system
+    for i in range(numberOfZeroes):
+      try:
+        char = 0b01111011
+        if i+1 in dots:
+            char = with_dot(0b01111011)
+        shift.write(char)
+      except KeyError:
+        raise ValueError("The character cannot be printed on a 7 segment display")
+    #after sending in zeros, we send in the actual values
     for i in range(length):
       try:
         char = available_chars[values[i]]

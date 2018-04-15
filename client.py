@@ -1,8 +1,7 @@
 import socket
 
-host = '192.168.4.4'
+host = '192.168.4.1'
 port = 6677
-i=0
 
 def new_sock(host, port):
   s = socket.socket()
@@ -10,9 +9,14 @@ def new_sock(host, port):
   return s
 
 
-while(i<10):
+def send_number(i):
   s = new_sock(host,port)
-  print(s.recv(512))
   s.send('{}' .format(i).encode())
-  i = i + 1
   s.close()
+  
+def get_number(i):
+  s = new_sock(host,port)
+  s.send('{}' .format(i).encode())
+  number = s.recv(1024)
+  s.close()
+  return [ number.split()[0], number.split()[1] ]

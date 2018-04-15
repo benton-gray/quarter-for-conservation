@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import Pi7SegPy as Pi7Seg
 import PiShiftPy as shift
 import ProjectClass as Conservation
-#import client as cli
+import client as cli
 #import server as server
 #import map_network as net 
 import time
@@ -39,8 +39,8 @@ def setup_gpio():
       GPIO.output(listOfProjects[i].segmentLatch,GPIO.LOW)
       GPIO.setup(listOfProjects[i].firstInterrupt,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
       GPIO.setup(listOfProjects[i].secondInterrupt,GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-      GPIO.add_event_detect(listOfProjects[i].firstInterrupt, GPIO.FALLING, callback=my_callback,bouncetime=500)
-      GPIO.add_event_detect(listOfProjects[i].secondInterrupt, GPIO.FALLING, callback=my_callback,bouncetime=500)
+      GPIO.add_event_detect(listOfProjects[i].firstInterrupt, GPIO.FALLING, callback=my_callback,bouncetime=350)
+      GPIO.add_event_detect(listOfProjects[i].secondInterrupt, GPIO.FALLING, callback=my_callback,bouncetime=350)
       print("i is:" +str(i))
       
       '''
@@ -202,14 +202,33 @@ def main():
   #shift.write_all(0)
   #END TODO
   print("3")
+  count = 0
+
   while True:
+
+    if(count == 799999):
+      serv_num = cli.get_number('Gorillaz Giraffes')
+      print(serv_num)
+      gorillaz = int(serv_num[0])
+      giraffes = int(serv_num[1])
+      if(project0.currentNumber < gorillaz):
+        project0.currentNumber = gorillaz
+        print(project0.currentNumber)
+        flag = True
+      if(project1.currentNumber < giraffes):
+        project1.currentNumber = giraffes
+        flag = True
+      count = 0
+        
     if flag:
+
       #we want to turn off the flag right away or else it's uselss to do theinterrupt this way
       flag = False
       
       if(currentInterruptChannel == 14 or currentInterruptChannel == 15):
         Pi7Seg.init(project0.segmentData, project0.segmentClock, project0.segmentLatch, 7, 7, common_cathode_type=False)
         LED_NUMBER(project0)
+        cli.send_number('Gorillaz '+ str(project0.currentNumber))
       elif(currentInterruptChannel == 23 or currentInterruptChannel == 24):
         Pi7Seg.init(project1.segmentData, project1.segmentClock, project1.segmentLatch, 7, 7, common_cathode_type=False)
         LED_NUMBER(project1)
@@ -222,7 +241,7 @@ def main():
      
       
       print("4z")
-      
+    count = count + 1
     #server.serv()
 
 if __name__ == "__main__":

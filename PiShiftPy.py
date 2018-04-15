@@ -31,6 +31,8 @@ def write_latch():
 
 def push_bit(bit):
   global data, clock
+  # print("data:" + "  " + str(data))
+  # print("clock:" + "  " + str(clock))
   GPIO.output(clock, 0)
   GPIO.output(data, bit)
   GPIO.output(clock, 1)
