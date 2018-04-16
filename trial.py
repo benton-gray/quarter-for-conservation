@@ -251,18 +251,21 @@ def main():
 
     if(count == 800000):
       writeCurrentNumberToFile()
-      serv_num = cli.get_number('Gorillaz Giraffes')
-      print(serv_num)
-      gorillaz = int(serv_num[0])
-      giraffes = int(serv_num[1])
-      if(project0.currentNumber < gorillaz):
-        project0.currentNumber = gorillaz
-        print(project0.currentNumber)
-        flag = True
-      if(project1.currentNumber < giraffes):
-        project1.currentNumber = giraffes
-        print(project1.currentNumber)
-        flag = True
+      try:
+        serv_num = cli.get_number('Gorillaz Giraffes')
+        print(serv_num)
+        gorillaz = int(serv_num[0])
+        giraffes = int(serv_num[1])
+        if(project0.currentNumber < gorillaz):
+          project0.currentNumber = gorillaz
+          print(project0.currentNumber)
+          flag = True
+        if(project1.currentNumber < giraffes):
+          project1.currentNumber = giraffes
+          print(project1.currentNumber)
+          flag = True
+      except:
+        pass
       count = 0
       print("4z")
 
