@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import Pi7SegPy as Pi7Seg
 import PiShiftPy as shift
 import ProjectClass as Conservation
-#import client as cli
+import client as cli
 #import server as server
 #import map_network as net 
 import time
@@ -87,7 +87,7 @@ def my_callback(channel):
   '''
   Callback function to detect interrupts from sensors
   '''
-  print("channel:" + str(channel))
+  #rint("channel:" + str(channel))
   global flag
   global currentInterruptChannel
   
@@ -169,31 +169,76 @@ def LED_NUMBER(project):
   print(project.storedNumberFileName + "  " + str(project.currentNumber));
   print("got after increment")
 #this function will be ran to obtain the previously stored count from a file on bootup
-def disasterRecovery():
+def setAllStoredCount():
     global storedNumberFileName
     global number
-    if os.path.exists(storedNumberFileName):
-        with open(storedNumberFileName, 'r') as file:
-            try:
-                number = int(file.readline())
-            except:
-                print("caught exception")
-    else :
+    for i in range(len(listOfProjects)):
+        if os.path.exists(listOfProjects[i].storedNumberFileName):
+            with open(listOfProjects[i].storedNumberFileName, 'r') as file:
+                #for line in file:
+                    #x = line.strip('')
+                    #print(x)
+                    #print(type(int(x)))
+                    #listOfProjects[i].currentNumber = int(x)
+                    
+                try:
+                    #print("the number is : " + file.readline())
+                    x = file.readline().strip('')
+                    #print(x)
+                    listOfProjects[i].currentNumber = int(x)
+                        #listOfProjects[i].currentNumber = int(listOfProjects[i].currentNumber)
+                except Exception as e:
+                    print(e)
+        else :
         #file doesn't exist, make the file here and initialize it to be
         #the number 1
-        number = 1
-        print("file doesnt exist")
+            with open(listOfProjects[i].storedNumberFileName, 'w') as file:
+                try:
+                    file.write("0")
+                except:
+                    print("Can't write internal number. Maybe you have no file permission")
+            listOfProjects[i].currentNumber = 0
+            #number = 1
+            #print("file doesnt exist")
+def writeCurrentNumberToFile():
+    for i in range(len(listOfProjects)):
+        if os.path.exists(listOfProjects[i].storedNumberFileName):
+            with open(listOfProjects[i].storedNumberFileName, 'w') as file:
+                #for line in file:
+                    #x = line.strip('')
+                    #print(x)
+                    #print(type(int(x)))
+                    #listOfProjects[i].currentNumber = int(x)
+                    
+                try:
+                    file.write(str(listOfProjects[i].currentNumber))
+                    #print(x)
+                    #listOfProjects[i].currentNumber = int(x)
+                        #listOfProjects[i].currentNumber = int(listOfProjects[i].currentNumber)
+                except Exception as e:
+                    print(e)
+        else :
+        #file doesn't exist, make the file here and initialize it to be
+        #the number 1
+            with open(listOfProjects[i].storedNumberFileName, 'w') as file:
+                try:
+                    file.write("0")
+                except:
+                    print("Can't write internal number. Maybe you have no file permission")
+    
 
 def main():
   '''
   Start of Execution
   '''
+  count = 0
   print("went into main")
   global flag
   #global number
   global currentInterruptChannel
   setupProjectObjects()
   setup_gpio()
+  setAllStoredCount()
   print("just setup gpio")
   #GPIO.add_event_detect(23, GPIO.FALLING, callback=my_callback,bouncetime=500)
   #Pi7Seg.init(project0.segmentData, project0.segmentClock, project0.segmentLatch, 7, 7, common_cathode_type=False)
@@ -203,6 +248,24 @@ def main():
   #END TODO
   print("3")
   while True:
+
+    if(count == 800000):
+      writeCurrentNumberToFile()
+      serv_num = cli.get_number('Gorillaz Giraffes')
+      print(serv_num)
+      gorillaz = int(serv_num[0])
+      giraffes = int(serv_num[1])
+      if(project0.currentNumber < gorillaz):
+        project0.currentNumber = gorillaz
+        print(project0.currentNumber)
+        flag = True
+      if(project1.currentNumber < giraffes):
+        project1.currentNumber = giraffes
+        print(project1.currentNumber)
+        flag = True
+      count = 0
+      print("4z")
+
     if flag:
       #we want to turn off the flag right away or else it's uselss to do theinterrupt this way
       flag = False
@@ -210,25 +273,26 @@ def main():
       if(currentInterruptChannel == 14 or currentInterruptChannel == 15):
         Pi7Seg.init(project0.segmentData, project0.segmentClock, project0.segmentLatch, 7, 7, common_cathode_type=False)
         LED_NUMBER(project0)
+        cli.send_number('Gorillaz ' + str(project0.currentNumber))
       elif(currentInterruptChannel == 23 or currentInterruptChannel == 24):
         Pi7Seg.init(project1.segmentData, project1.segmentClock, project1.segmentLatch, 7, 7, common_cathode_type=False)
         LED_NUMBER(project1)
+        cli.send_number('Giraffes ' + str(project1.currentNumber))
       elif(currentInterruptChannel == 25 or currentInterruptChannel == 8):
         Pi7Seg.init(project2.segmentData, project2.segmentClock, project2.segmentLatch, 7, 7, common_cathode_type=False)
         LED_NUMBER(project2)
       elif(currentInterruptChannel == 16 or currentInterruptChannel == 20):
         Pi7Seg.init(project3.segmentData, project3.segmentClock, project3.segmentLatch, 7, 7, common_cathode_type=False)
         LED_NUMBER(project3)
-     
-      
-      print("4z")
+    
+    count = count + 1
+
       
     #server.serv()
 
 if __name__ == "__main__":
   try:
     print("went here")
-    disasterRecovery()
     #setupProjectObjects()
     main()
   except Exception as e:

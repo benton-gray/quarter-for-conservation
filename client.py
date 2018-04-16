@@ -19,4 +19,5 @@ def get_number(i):
   s.send('{}' .format(i).encode())
   number = s.recv(1024)
   s.close()
+  print(number)
   return [ number.split()[0], number.split()[1] ]
