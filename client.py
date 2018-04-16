@@ -5,6 +5,7 @@ port = 6677
 
 def new_sock(host, port):
   s = socket.socket()
+  s.settimeout(.01)
   s.connect((host,port))
   return s
 
