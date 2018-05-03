@@ -1,11 +1,11 @@
 import RPi.GPIO as ada
+import socket
 
 print '{} is the version type.' .format(ada.VERSION)
 
 ada.setmode(ada.BCM)
 count = 0
-ada.setup(24, ada.IN, pull_up_down=ada.PUD_DOWN)
-ada.setup(23, ada.IN, pull_up_down=ada.PUD_UP)
+ada.setup(24, ada.IN)
 def my_callback(channel):
     global count
     count += 1
@@ -13,9 +13,15 @@ def my_callback(channel):
 
 ada.add_event_detect(24, ada.RISING, callback=my_callback, bouncetime=200)
 
-
-print 'waiting for edge'
-ada.wait_for_edge(23, ada.FALLING)
+'''while True:
+  s.listen(1)
+  c, addr = s.accept()
+  print('Got connection from', addr)
+  c.send(str(count))
+  c.close()
+'''
+while True:
+   pass 
 
 ada.cleanup()
 
