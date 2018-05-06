@@ -2,3 +2,5 @@
 \.idea/
 
 benton\.py
+
+*.pyc
